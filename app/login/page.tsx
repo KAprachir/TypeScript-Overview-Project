@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+const loginSchema = z.object({
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
-    password: '',
+    password: "",
   });
 
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
