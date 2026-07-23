@@ -1,15 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
+import z, { email } from "zod";
 
 // TODO 1: Define an interface `RegisterFormData` with fields:
 // name (string), email (string), password (string), confirmPassword (string)
-interface RegisterFormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+const registerSchema = z
+  .object({
+    name: z.string().min(1, "Enter a Valid Name"),
+    email: z.string().email("Enter a valid email"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 // TODO 2 (optional but good practice): Define a type for form errors
 // Hint: not all fields are required to have an error at once — think about which utility type fits
