@@ -9,17 +9,16 @@ if (!uri) {
 let client: MongoClient
 let clientPromise: Promise<MongoClient>
 
-declare global {
-  var _mongoClientPromise: Promise<MongoClient> | undefined
+const globalWithMongo = globalThis as unknown as {
+  _mongoClientPromise?: Promise<MongoClient>
 }
 
 if (process.env.NODE_ENV === 'development') {
-  // dev এ hot-reload হলে বারবার নতুন connection না বানানোর জন্য global cache
-  if (!global._mongoClientPromise) {
+  if (!globalWithMongo._mongoClientPromise) {
     client = new MongoClient(uri)
-    global._mongoClientPromise = client.connect()
+    globalWithMongo._mongoClientPromise = client.connect()
   }
-  clientPromise = global._mongoClientPromise
+  clientPromise = globalWithMongo._mongoClientPromise
 } else {
   client = new MongoClient(uri)
   clientPromise = client.connect()

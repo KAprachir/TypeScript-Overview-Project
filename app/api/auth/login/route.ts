@@ -4,10 +4,9 @@ import { IUser, PublicUser } from '@/types/user'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
-const registerSchema = z.object({
-  name: z.string().trim().min(1, 'Name is required'),
+const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  password: z.string().min(1, 'Password is required')
 })
 
 function apiResponse<T> (success: boolean, data: T, message?: string) {
@@ -21,13 +20,12 @@ export async function POST (req: NextRequest) {
       rawBody = await req.json()
     } catch {
       return NextResponse.json(
-        apiResponse(false, null, 'Invalid JSON body'),
+        apiResponse(false, null, 'Invalid JSON payload'),
         { status: 400 }
       )
     }
 
-    const validationResult = registerSchema.safeParse(rawBody)
-
+    const validationResult = loginSchema.safeParse(rawBody)
     if (!validationResult.success) {
       const issue = validationResult.error.issues[0]
       return NextResponse.json(
@@ -36,42 +34,42 @@ export async function POST (req: NextRequest) {
       )
     }
 
-    const { name, email, password } = validationResult.data
+    const { email, password } = validationResult.data
 
     const client = await clientPromise
     const dbName = process.env.MONGODB_DB || 'ts_auth_lab'
     const db = client.db(dbName)
     const users = db.collection<IUser>('users')
 
-    const existingUser = await users.findOne({ email })
-    if (existingUser) {
+    const user = await users.findOne({ email })
+    if (!user) {
       return NextResponse.json(
-        apiResponse(false, null, 'Email already registered'),
-        { status: 409 }
+        apiResponse(false, null, 'Invalid email or password'),
+        { status: 401 }
       )
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    const newUser: IUser = {
-      name,
-      email,
-      password: hashedPassword,
-      createdAt: new Date()
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        apiResponse(false, null, 'Invalid email or password'),
+        { status: 401 }
+      )
     }
-
-    const result = await users.insertOne(newUser)
 
     const publicUser: PublicUser = {
-      _id: result.insertedId.toString(),
-      name: newUser.name,
-      email: newUser.email,
-      createdAt: newUser.createdAt
+      _id: user._id ? user._id.toString() : undefined,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt
     }
 
-    return NextResponse.json(apiResponse(true, publicUser), { status: 201 })
+    return NextResponse.json(
+      apiResponse(true, publicUser, 'Logged in successfully'),
+      { status: 200 }
+    )
   } catch (error) {
-    console.error('Registration Error:', error)
+    console.error('Login Error:', error)
     return NextResponse.json(
       apiResponse(false, null, 'An internal server error occurred'),
       { status: 500 }
