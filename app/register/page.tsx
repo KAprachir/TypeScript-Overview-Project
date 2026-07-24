@@ -82,7 +82,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black text-zinc-100">
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-linear-to-br from-zinc-900 via-zinc-950 to-black text-zinc-100">
       <div className="w-full max-w-md bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 p-8 rounded-2xl shadow-2xl space-y-6 transition-all duration-300">
         
         {/* Header */}
@@ -99,7 +99,7 @@ export default function RegisterPage() {
         {/* Server Alert Banners */}
         {serverError && (
           <div className="flex items-center gap-3 p-3.5 text-sm text-red-300 bg-red-950/50 border border-red-800/50 rounded-xl">
-            <svg className="w-5 h-5 flex-shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{serverError}</span>
@@ -108,7 +108,7 @@ export default function RegisterPage() {
 
         {successMsg && (
           <div className="flex items-center gap-3 p-3.5 text-sm text-emerald-300 bg-emerald-950/50 border border-emerald-800/50 rounded-xl">
-            <svg className="w-5 h-5 flex-shrink-0 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 shrink-0 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
             <span>{successMsg}</span>

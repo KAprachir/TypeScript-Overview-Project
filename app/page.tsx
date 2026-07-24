@@ -27,7 +27,7 @@ const navItems: FeatureItem[] = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-16 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black text-zinc-100 font-sans">
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-16 bg-linear-to-br from-zinc-900 via-zinc-950 to-black text-zinc-100 font-sans">
       <div className="max-w-xl w-full text-center space-y-8">
         
         {/* Header Hero */}
@@ -35,7 +35,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider">
             <span>Next.js 16 + TypeScript 5</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-white via-zinc-200 to-zinc-400">
             TS Auth Lab
           </h1>
           <p className="text-base text-zinc-400 max-w-md mx-auto leading-relaxed">
