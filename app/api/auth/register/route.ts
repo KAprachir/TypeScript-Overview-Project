@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import clientPromise from '@/lib/mongodb'
 import { IUser, PublicUser } from '@/types/user'
-import bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
 
 // Generic helper — যেকোনো data type এর জন্য reusable response shape
 function apiResponse<T> (success: boolean, data: T, message?: string) {

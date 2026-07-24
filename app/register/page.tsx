@@ -34,8 +34,15 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    console.log("Submitting", data);
-  };
+  const res = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  const result = await res.json();
+  console.log(result);
+  // TODO: success হলে কি করবা? error হলে কি দেখাবা?
+};
 
   return (
     <form

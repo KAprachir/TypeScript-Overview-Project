@@ -19,6 +19,7 @@
       }
     ],
     "paths": {
+      "bcryptjs": ["./types/bcryptjs.d.ts"],
       "@/*": ["./*"]
     }
   },
