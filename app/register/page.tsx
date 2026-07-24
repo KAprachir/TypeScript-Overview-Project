@@ -2,10 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import z from "zod";
 
-// TODO 1: Define an interface `RegisterFormData` with fields:
-// name (string), email (string), password (string), confirmPassword (string)
 const registerSchema = z
   .object({
     name: z.string().min(1, "Enter a Valid Name"),
@@ -19,12 +18,22 @@ const registerSchema = z
   });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
-// TODO 2 (optional but good practice): Define a type for form errors
-// Hint: not all fields are required to have an error at once — think about which utility type fits
+
+// Step A: backend এর apiResponse shape এর সাথে match করে frontend type বানাও
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+interface RegisteredUser {
+  _id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
 
 export default function RegisterPage() {
-  // TODO 3: Type the useState below using your RegisterFormData interface
-
   const {
     register,
     handleSubmit,
@@ -33,16 +42,30 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   });
 
+  // Step B: server error message দেখানোর জন্য আলাদা state
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
   const onSubmit = async (data: RegisterFormData) => {
-  const res = await fetch("/api/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  const result = await res.json();
-  console.log(result);
-  // TODO: success হলে কি করবা? error হলে কি দেখাবা?
-};
+    setServerError(null);
+    setSuccessMsg(null);
+
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    // Step C: response টাকে generic type দিয়ে type করো
+    const result: ApiResponse<RegisteredUser | null> = await res.json();
+
+    if (result.success) {
+      setSuccessMsg("Account created successfully!");
+      // পরে এইখানে redirect করবা login page এ
+    } else {
+      setServerError(result.message || "Something went wrong");
+    }
+  };
 
   return (
     <form
@@ -51,13 +74,23 @@ export default function RegisterPage() {
     >
       <h1 className="text-xl font-bold">Register</h1>
 
+      {serverError && (
+        <p className="text-red-500 text-sm bg-red-50 p-2 rounded">
+          {serverError}
+        </p>
+      )}
+      {successMsg && (
+        <p className="text-green-600 text-sm bg-green-50 p-2 rounded">
+          {successMsg}
+        </p>
+      )}
+
       <div>
         <input
           {...register("name")}
           placeholder="Name"
           className="w-full border p-2 rounded"
         />
-        {/* TODO 8: show error if exists */}
         {errors.name && (
           <p className="text-red-500 text-sm">{errors.name.message}</p>
         )}
@@ -69,7 +102,6 @@ export default function RegisterPage() {
           placeholder="Email"
           className="w-full border p-2 rounded"
         />
-        {/* error here */}
         {errors.email && (
           <p className="text-red-500 text-sm">{errors.email.message}</p>
         )}
@@ -82,7 +114,6 @@ export default function RegisterPage() {
           placeholder="Password"
           className="w-full border p-2 rounded"
         />
-        {/* error here */}
         {errors.password && (
           <p className="text-red-500 text-sm">{errors.password.message}</p>
         )}
@@ -95,7 +126,6 @@ export default function RegisterPage() {
           placeholder="Confirm Password"
           className="w-full border p-2 rounded"
         />
-        {/* error here */}
         {errors.confirmPassword && (
           <p className="text-red-500 text-sm">
             {errors.confirmPassword.message}
