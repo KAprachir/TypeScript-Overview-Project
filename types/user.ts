@@ -7,4 +7,4 @@ export interface IUser {
 }
 
 export type PublicUser = Omit<IUser, 'password'>
-export type UserSummery = Pick<IUser, 'name' | 'email'>
+export type UserSummary = Pick<IUser, 'name' | 'email'>
